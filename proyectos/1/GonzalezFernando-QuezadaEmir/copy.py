@@ -115,7 +115,7 @@ def extraer(data, filename, nombre_salida=None):
 
     # Checamos que la cantidad de bytes sea la correcta.
     if len(file_data) != file_info['size']:
-        print(f"⚠️  Advertencia: Se esperaban {file_info['size']} bytes, " f"pero se leyeron {len(file_data)} bytes")
+        print(f"Advertencia: Se esperaban {file_info['size']} bytes, " f"pero se leyeron {len(file_data)} bytes")
 
     if nombre_salida is None:
         nombre_salida = filename
@@ -124,9 +124,9 @@ def extraer(data, filename, nombre_salida=None):
 
     # Puede pasar que el archivo ya exista, así que preguntamos al usuario si desea sobrescribirlo.
     if output_file.exists():
-        response = input(f"⚠️  El archivo '{nombre_salida}' ya existe. ¿Sobrescribir? (s/n): ")
+        response = input(f"El archivo '{nombre_salida}' ya existe. ¿Sobrescribir? (s/n): ")
         if response.lower() != 's':
-            print("❌ Operación cancelada")
+            print("Operación cancelada")
             return False
         
 
@@ -140,7 +140,7 @@ def extraer(data, filename, nombre_salida=None):
         return True
         
     except Exception as e:
-        print(f"❌ Error al escribir el archivo: {e}")
+        print(f"Error al escribir el archivo: {e}")
         return False
 
 def main():
