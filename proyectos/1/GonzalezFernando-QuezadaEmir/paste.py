@@ -3,7 +3,7 @@ import sys
 import struct
 from datetime import datetime
 from math import ceil
-from reader import superbloque, directorio
+from functions import superbloque, directorio
 
 def occupied_clusters(archivos):
     # Esta función nos devuelve los numeros de clusters ocupados
