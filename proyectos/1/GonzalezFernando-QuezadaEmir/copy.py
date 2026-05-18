@@ -5,7 +5,7 @@
 from pathlib import Path
 import sys
 import struct
-from reader import superbloque, directorio, analizar, imprimir_archivos
+from functions import superbloque, directorio, imprimir_archivos
 # Importamos las funciones superbloque y directorio 
 # desde  reader.py para reutilizar el código de análisis 
 # del sistema de archivos Fiunamfs.
@@ -158,8 +158,8 @@ def main():
         # a menos que se especifique una ruta diferente en arg2.
 
     # Ejemplo:
-    arg1 = "logo.png" # El nombre del archivo que queremos extraer de Fiunamfs.img
-    arg2 = "logo_extraido.png" # Nombre con el que queremos guardar el archivo
+    arg1 = "prueba.txt" # El nombre del archivo que queremos extraer de Fiunamfs.img
+    arg2 = "prueba_extraida.txt" # Nombre con el que queremos guardar el archivo
 
     extraer(data, arg1, arg2)
 
