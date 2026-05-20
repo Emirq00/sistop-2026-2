@@ -119,10 +119,10 @@ def imprimir_archivos(files):
 			first_cluster = struct.unpack('<I', entry_data[20:24])[0] 
 
 			# Bytes 24-32 para la fecha de creación.
-			creation_time = entry_data[24:44].decode('ascii', errors='ignore').rstrip('\x00')
+			creation_time = entry_data[30:44].decode('ascii', errors='ignore').rstrip('\x00')
 
 			# Bytes 40-55 para la fecha de modificación.
-			modification_time = entry_data[44:64].decode('ascii', errors='ignore').rstrip('\x00')
+			modification_time = entry_data[50:64].decode('ascii', errors='ignore').rstrip('\x00')
 			print(f"Archivo: {file_name}")
 			print(f"  Tipo: {file_type}")
 			print(f"  Tamaño: {file_size} bytes")
