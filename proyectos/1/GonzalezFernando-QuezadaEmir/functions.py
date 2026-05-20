@@ -119,10 +119,10 @@ def imprimir_archivos(files):
 			first_cluster = struct.unpack('<I', entry_data[20:24])[0] 
 
 			# Bytes 24-32 para la fecha de creación.
-			creation_time = entry_data[30:44].decode('ascii', errors='ignore').rstrip('\x00')
+			creation_time = entry_data[24:44].decode('ascii', errors='ignore').rstrip('\x00')
 
 			# Bytes 40-55 para la fecha de modificación.
-			modification_time = entry_data[50:64].decode('ascii', errors='ignore').rstrip('\x00')
+			modification_time = entry_data[44:64].decode('ascii', errors='ignore').rstrip('\x00')
 			print(f"Archivo: {file_name}")
 			print(f"  Tipo: {file_type}")
 			print(f"  Tamaño: {file_size} bytes")
@@ -499,16 +499,16 @@ def extraer(data, filename, nombre_salida=None):
 
 
 def borrar(img_path, filename):
-    """
-    Elimina un archivo de FiUnamFS modificando su entrada en el directorio
-    para marcarla como libre. Los clusters de datos asociados se liberan automáticamente.
     
-    Args:
-        img_path: Ruta al archivo .img de FiUnamFS.
-        filename: Nombre del archivo que se desea eliminar.
-    Returns:
-        True si el archivo se eliminó con éxito, False en caso contrario.
-    """
+    # Elimina un archivo de FiUnamFS modificando su entrada en el directorio
+    # para marcarla como libre. Los clusters de datos asociados se liberan automáticamente.
+    
+    # Args:
+        # img_path: Ruta al archivo .img de FiUnamFS.
+        # filename: Nombre del archivo que se desea eliminar.
+    # Returns:
+        # True si el archivo se eliminó con éxito, False en caso contrario.
+    
     img_file = Path(img_path)
     if not img_file.exists():
         print(f"ERROR! El archivo '{img_path}' no existe.")
