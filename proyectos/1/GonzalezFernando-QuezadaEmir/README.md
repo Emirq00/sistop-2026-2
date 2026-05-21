@@ -1,4 +1,4 @@
-# Proyecto: Micro Sistema de Archivos con Hilos
+# Proyecto: Micro Sistema de Archivos Multihilos
 
 **Integrantes:**
 - González Martínez Fernando
