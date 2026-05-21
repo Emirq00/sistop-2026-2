@@ -51,7 +51,7 @@ python3 main.py fiunamfs.img delete viejo.txt
 
 FUSE (*Filesystem in Userspace*) permite montar el `.img` como una unidad real del sistema operativo. Una vez montado, puedes navegar su contenido desde tu gestor de archivos como si fuera una USB externa, abrir archivos directamente, arrastrarlos, y eliminarlos, sin usar ningún comando especial.
 
-#### Paso 1 — Instalar el núcleo de FUSE en tu sistema operativo
+#### Paso 1: Instalar el núcleo de FUSE en tu sistema operativo
 
 * **Linux (Ubuntu/Debian):** Es nativo, únicamente hay que asegurarse que se tengan las librerías base:
   ```bash
@@ -60,7 +60,7 @@ FUSE (*Filesystem in Userspace*) permite montar el `.img` como una unidad real d
 * **macOS:** Necesitas instalar `macFUSE`. Consulta las instrucciones en [osxfuse.github.io](https://osxfuse.github.io).
 * **Windows:** FUSE es un estándar UNIX. Para Windows existe **WinFSP**. Consulta su repositorio oficial en [github.com/winfsp/winfsp](https://github.com/winfsp/winfsp).
 
-#### Paso 2 — Instalar `fusepy`
+#### Paso 2: Instalar `fusepy`
 
 Para la instalación mediante entorno virtual (recomendada):
 
@@ -73,9 +73,9 @@ source venv/bin/activate
 pip install fusepy
 ```
 
-#### Paso 3 — Montar el sistema de archivos
+#### Paso 3: Montar el sistema de archivos
 
-> Se recomienda crear una carpeta vacía y nueva como punto de montaje. Intentar montar sobre un directorio existente con contenido generará un error.
+> Se recomienda crear una carpeta nueva como punto de montaje. Intentar montar sobre un directorio existente con contenido generará un error.
 
 ```bash
 mkdir punto_de_montaje
@@ -105,11 +105,11 @@ fusermount -u <punto_de_montaje>
 ## Funcionamiento
 
 
-### Concurrencia — Patrón Monitor con dos hilos
+### Concurrencia - Patrón Monitor con dos hilos
 
 El programa usa **dos hilos de ejecución** que se comunican mediante un `threading.Condition`:
 
-* **Hilo principal** — Ejecuta la operación solicitada. Al completar cualquier escritura (`paste` o `delete`), notifica al monitor llamando a `monitor.notificar(operacion)`, lo que adquiere el `Condition`, registra la operación y llama a `condition.notify()`.
-* **Hilo monitor** — Permanece dormido en `condition.wait_for()`. Al recibir la notificación despierta, consulta el estado actual del disco mediante `estado_disco()` e imprime un diagnóstico con el número de archivos y clusters libres. Luego vuelve a dormir hasta la próxima escritura.
+* **Hilo principal** - Ejecuta la operación solicitada. Al completar cualquier escritura (`paste` o `delete`), notifica al monitor llamando a `monitor.notificar(operacion)`, lo que adquiere el `Condition`, registra la operación y llama a `condition.notify()`.
+* **Hilo monitor** - Permanece dormido en `condition.wait_for()`. Al recibir la notificación despierta, consulta el estado actual del disco mediante `estado_disco()` e imprime un diagnóstico con el número de archivos y clusters libres. Luego vuelve a dormir hasta la próxima escritura.
 
 Al terminar el programa, `monitor.detener()` señala al hilo que debe salir y espera con `hilo.join()` a que termine limpiamente, garantizando que ningún diagnóstico quede a la mitad.
