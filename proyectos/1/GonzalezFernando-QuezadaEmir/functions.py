@@ -115,14 +115,14 @@ def imprimir_archivos(files):
 			# Bytes 16-20 para el tamaño del archivo.
 			file_size = struct.unpack('<I', entry_data[16:20])[0] 
 
-			# Bytes 20-23 para el primer cluster del archivo.
+			# Bytes 20-24 para el primer cluster del archivo.
 			first_cluster = struct.unpack('<I', entry_data[20:24])[0] 
 
-			# Bytes 24-32 para la fecha de creación.
-			creation_time = entry_data[24:44].decode('ascii', errors='ignore').rstrip('\x00')
+			# Bytes 30-44 para la fecha de creación.
+			creation_time = entry_data[30:44].decode('ascii', errors='ignore').rstrip('\x00')
 
-			# Bytes 40-55 para la fecha de modificación.
-			modification_time = entry_data[44:64].decode('ascii', errors='ignore').rstrip('\x00')
+			# Bytes 50-64 para la fecha de modificación.
+			modification_time = entry_data[50:64].decode('ascii', errors='ignore').rstrip('\x00')
 			print(f"Archivo: {file_name}")
 			print(f"  Tipo: {file_type}")
 			print(f"  Tamaño: {file_size} bytes")
@@ -153,6 +153,7 @@ def clusters_ocupados(archivos):
             ocupados.add(start_cluster + i)
 
     return ocupados
+
 
 def available_clusters(archivos, neededClusters, totalClusters):
     # Función que nos indica los clusters contiguos disponibles para almacenar un nuevo archivo.
@@ -272,21 +273,10 @@ def paste(img_path, archivo_local, nombre_destino=None):
 
     # Calculamos el número de clusters necesarios para almacenar el nuevo archivo.
     clusters_necesarios = ceil(tamaño_archivo / cluster_size)
+    print("\n============ Información para el pegado del archivo ===================")
     print(f"Clusters necesarios: {clusters_necesarios}")
 
     archivos = directorio(data, superbloque_info)
-
-    # Hacemos una verificación, para evitar errores de sobreescritura.
-    for archivo in archivos:
-        file_name = archivo[1:15].decode('ascii', errors='ignore').rstrip('\x00')
-        if file_name == nombre_destino:
-            response = input(f"El archivo '{nombre_destino}' ya existe en FiUnamFS. ¿Sobrescribir? (y/n): ")
-            if response.lower() != 'y':
-                print("¡Operación cancelada!")
-                return False
-            # TO DO mejora: Podríamos implementar sobrescritura marcando el viejo como eliminado
-            print("Nota: La sobrescritura creará una nueva entrada (el archivo viejo quedará marcado)")
-            break
     
     entrada_libre = find_directory_entry(data, superbloque_info)
 
@@ -304,16 +294,17 @@ def paste(img_path, archivo_local, nombre_destino=None):
         return False
     
     print(f"Clusters libres encontrados: {primer_cluster} a {primer_cluster + clusters_necesarios - 1}")
+    print("=======================================================================\n")
 
-    print(f"Escribiendo datos en clusters...")
+    print(f"- Escribiendo datos en clusters...")
     posicion_datos = primer_cluster * cluster_size
 
     # Escribimos el contenido del archivo local en el área de datos del sistema de archivos,
     # comenzando desde el cluster disponible que encontramos.
     data[posicion_datos:posicion_datos + tamaño_archivo] = contenido_local
 
-    print(f"{tamaño_archivo} bytes escritos en posición {posicion_datos}")
-    print(f"Actualizando la entrada del directorio...")
+    print(f"   {tamaño_archivo} bytes escritos en posición {posicion_datos}")
+    print(f"- Actualizando la entrada del directorio...")
 
     # Calculamos la posición de la entrada en el directorio
 
@@ -343,18 +334,18 @@ def paste(img_path, archivo_local, nombre_destino=None):
     entrada[50:50+len(timestamp_bytes)] = timestamp_bytes
 
     data[posicion_entrada:posicion_entrada + 64] = entrada
-    print(f"Guardando cambios en {img_path}...")
+    print(f"- Guardando cambios en {img_path}...")
 
     try:
         with open(img_path, 'wb') as f:
             f.write(data)
         
-        print(f"¡Archivo copiado exitosamente!")
-        print(f"Nombre: {nombre_destino}")
-        print(f"Tamaño: {tamaño_archivo} bytes")
-        print(f"Cluster inicial: {primer_cluster}")
-        print(f"Entrada del directorio: #{entrada_libre}")
-        print(f"Fecha: {timestamp}")
+        print(f"\n¡Archivo copiado exitosamente!")
+        print(f"   Nombre: {nombre_destino}")
+        print(f"   Tamaño: {tamaño_archivo} bytes")
+        print(f"   Cluster inicial: {primer_cluster}")
+        print(f"   Entrada del directorio: #{entrada_libre}")
+        print(f"   Fecha: {timestamp}")
         
         return True
         
@@ -403,22 +394,22 @@ def find_file(data, filename, superbloque_info):
         if file_type == '/':
             continue
         
-        # Bytes 1-15: Nombre del archivo
-        entry_filename = entry_data[1:16].decode('ascii', errors='ignore').rstrip('\x00').rstrip()
+        # Bytes 1-16: Nombre del archivo
+        entry_filename = entry_data[1:15].decode('ascii', errors='ignore').rstrip('\x00').rstrip()
         
         # ¿Es el archivo que buscamos?
         if entry_filename == filename:
-            # Bytes 16-19: Tamaño del archivo
+            # Bytes 16-20: Tamaño del archivo
             file_size = struct.unpack('<I', entry_data[16:20])[0]
             
-            # Bytes 20-23: Cluster inicial
+            # Bytes 20-24: Cluster inicial
             start_cluster = struct.unpack('<I', entry_data[20:24])[0]
             
-            # Bytes 24-38: Fecha de creación
-            creation_time = entry_data[24:39].decode('ascii', errors='ignore').rstrip('\x00')
+            # Bytes 30-44: Fecha de creación
+            creation_time = entry_data[30:44].decode('ascii', errors='ignore').rstrip('\x00')
             
-            # Bytes 40-54: Fecha de modificación
-            modification_time = entry_data[40:55].decode('ascii', errors='ignore').rstrip('\x00')
+            # Bytes 50-64: Fecha de modificación
+            modification_time = entry_data[50:64].decode('ascii', errors='ignore').rstrip('\x00')
             
             return {
                 'filename': entry_filename,
@@ -524,16 +515,19 @@ def borrar(img_path, filename):
         print("ERROR! No es un sistema FiUnamFS válido.")
         return False
 
-    # Buscamos el archivo en el directorio usando tu función existente
+    # Buscamos el archivo en el directorio
     file_info = find_file(data, filename, superbloque_info)
     if file_info is None:
         print(f"Error: El archivo '{filename}' no existe en el sistema de archivos.")
         return False
 
+    print("\n============ Información del eliminado del archivo ===================")
     print(f"Archivo '{filename}' encontrado.")
     print(f"  Entrada de directorio: #{file_info['entry_index']}")
     print(f"  Cluster inicial: {file_info['start_cluster']}")
     print(f"  Tamaño: {file_info['size']} bytes")
+    print("======================================================================\n")
+
 
     # Calculamos la posición exacta en bytes de la entrada de 64 bytes
     cluster_size = superbloque_info['cluster_size']
@@ -551,14 +545,14 @@ def borrar(img_path, filename):
     # Aplicamos los cambios en el búfer de memoria
     data[posicion_entrada:posicion_entrada + entry_size] = entrada_vacia
 
-    print("Actualizando el directorio en el disco...")
+    print("- Actualizando el directorio en el disco...")
     
     # Guardamos los cambios de regreso al archivo .img
     try:
         with open(img_path, 'wb') as f:
             f.write(data)
         
-        print(f"¡Archivo '{filename}' eliminado exitosamente!")
+        print(f"\n¡Archivo '{filename}' eliminado exitosamente!")
         return True
         
     except Exception as e:

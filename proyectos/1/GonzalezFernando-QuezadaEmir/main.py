@@ -8,29 +8,29 @@ from monitor import Monitor
 
 AYUDA = """
 Manual de Uso:
-  python main.py <img> list
+  python/python3 main.py <img> list
       Lista los archivos en FiUnamFS.
 
-  python main.py <img> extract <archivo> [salida]
+  python/python3 main.py <img> extract <archivo> [salida]
       Copia un archivo de FiUnamFS a tu sistema.
         <archivo>  Nombre del archivo dentro de FiUnamFS
         [salida]   Ruta de destino local  (opcional, default: mismo nombre)
 
-  python main.py <img> paste <local> [destino]
+  python/python3 main.py <img> paste <local> [destino]
       Copia un archivo de tu sistema a FiUnamFS.
         <local>    Ruta al archivo en tu sistema
         [destino]  Nombre dentro de FiUnamFS     (opcional, default: mismo nombre)
 
-  python main.py <img> delete <archivo>
+  python/python3 main.py <img> delete <archivo>
       Elimina un archivo de FiUnamFS.
         <archivo>  Nombre dentro de FiUnamFS
 
 Ejemplos:
   python main.py fiunamfs.img list
-  python main.py fiunamfs.img extract prueba.txt
-  python main.py fiunamfs.img extract prueba.txt copia_local.txt
+  python3 main.py fiunamfs.img extract prueba.txt
+  python3 main.py fiunamfs.img extract prueba.txt copia_local.txt
   python main.py fiunamfs.img paste "/home/user/doc.pdf" DOC.PDF
-  python main.py fiunamfs.img delete viejo.txt
+  python3 main.py fiunamfs.img delete viejo.txt
 """
 
 
